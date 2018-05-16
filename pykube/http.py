@@ -150,7 +150,7 @@ class HTTPClient(object):
 
     _session = None
 
-    def __init__(self, config):
+    def __init__(self, config, timeout=10):
         """
         Creates a new instance of the HTTPClient.
 
@@ -159,6 +159,8 @@ class HTTPClient(object):
         """
         self.config = config
         self.url = self.config.cluster["server"]
+
+        self.timeout = timeout
 
         session = requests.Session()
         session.mount("https://", KubernetesHTTPAdapter(self.config))
@@ -227,6 +229,7 @@ class HTTPClient(object):
             url = url[1:]
         bits.append(url)
         kwargs["url"] = self.url + posixpath.join(*bits)
+        kwargs["timeout"] = self.timeout
         return kwargs
 
     def raise_for_status(self, resp):
